@@ -18,3 +18,13 @@ export const fetchKlines = async(symbol = 'BTCUSDT', interval = '30m') => {
     return [];
   }
 }
+
+export const fetchSymbols = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/exchangeInfo`);
+        return response.data.symbols.map(symbol => symbol.symbol);
+    } catch (error) {
+        console.error('Error fetching symbols: ', error);
+        return [];
+    }
+};
