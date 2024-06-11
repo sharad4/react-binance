@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { fetchKlines, fetchSymbols } from '../api/binance';
+import { fetchKlines, fetchSymbols, fetchCurrentPrice } from '../api/binance';
 import { 
     Chart as ChartJS,
     CategoryScale,
@@ -27,6 +27,7 @@ const RealTimeChart = () => {
     const [symbols, setSymbols] = useState([]);
     const [selectedSymbol, setSelectedSymbol] = useState('BTCUSDT');
     const [selectedInterval, setSelectedInterval] = useState('30m');
+    const [currentPrice, setCurrentPrice] = useState(null);
 
     const intervals = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M'];
 
@@ -50,6 +51,19 @@ const RealTimeChart = () => {
         });
     };
 
+    const fetchPrice = async () => {
+        try {
+            const price = await fetchCurrentPrice(selectedSymbol);
+            if (!price){
+                console.error('Failed to fetch price, received:', price);
+                return;
+            }
+            setCurrentPrice(price);
+        } catch (error) {
+            console.error('Error fetching price:', error);
+        }
+    };
+
     useEffect(() => {
         const fetchSymbolsList = async () => {
             const symbolsList = await fetchSymbols();
@@ -57,19 +71,35 @@ const RealTimeChart = () => {
         };
 
         fetchSymbolsList();
+    }, []);
 
+    useEffect(() => {
         fetchData();
-        const interval = setInterval(() => {
+        fetchPrice();
+
+        const dataInterval = setInterval(() => {
             fetchData();
         }, 30000);
 
-        return () => clearInterval(interval);
-    }, [selectedSymbol, selectedInterval]);
+        const priceInterval = setInterval(() => {
+            fetchPrice();
+        }, 5000);
+
+        return () => {
+            clearInterval(dataInterval);
+            clearInterval(priceInterval);
+        };
+    }, [selectedSymbol, selectedInterval])
 
   
   return (
     <div className='container mx-auto p-4'>
-        <h2 className='text-2xl font-bold text-center mb4'>Real-Time BTC/USDT Chart</h2>
+        <h2 className='text-2xl font-bold text-center mb-4'>Real-Time {selectedSymbol} Chart</h2>
+        {currentPrice && (
+            <p className='text-center text-lg mb-4 bg-blue-100 border border-blue-300 p-4 rounded'>
+                Current Price of {selectedSymbol}: ${parseFloat(currentPrice).toFixed(2)}
+            </p>
+        )}
         <div className="flex justify-center mb-4">
             <select
                 value={selectedSymbol}

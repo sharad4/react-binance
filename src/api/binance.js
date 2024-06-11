@@ -28,3 +28,17 @@ export const fetchSymbols = async () => {
         return [];
     }
 };
+
+export const fetchCurrentPrice = async (symbol = 'BTCUSDT') => {
+  try {
+    const response = await axios.get(`${BASE_URL}/ticker/price`, {
+      params: {
+        symbol,
+      },
+    });
+    return response.data.price;
+  } catch (error) {
+    console.error('Error fetching current price: ', error);
+    return null;
+  }
+}
