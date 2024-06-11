@@ -94,13 +94,13 @@ const RealTimeChart = () => {
   
   return (
     <div className='container mx-auto p-4'>
-        <h2 className='text-2xl font-bold text-center mb-4'>Real-Time {selectedSymbol} Chart</h2>
+        <h2 className='text-2xl md:text-3xl font-bold text-center mb-4'>Real-Time {selectedSymbol} Chart</h2>
         {currentPrice && (
             <p className='text-center text-lg mb-4 bg-blue-100 border border-blue-300 p-4 rounded'>
                 Current Price of {selectedSymbol}: ${parseFloat(currentPrice).toFixed(2)}
             </p>
         )}
-        <div className="flex justify-center mb-4">
+        <div className="flex flex-col md:flex-row justify-center mb-4 space-y-4 md:space-y-0 md:space-x-4">
             <select
                 value={selectedSymbol}
                 onChange={(e) => setSelectedSymbol(e.target.value)}
@@ -126,7 +126,7 @@ const RealTimeChart = () => {
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
             {chartData.labels.length > 0 ? (
-             <Line data={chartData} />
+             <Line data={chartData}  />
             ) : (
                 <p className='text-center'>Loading data....</p>
             )}
