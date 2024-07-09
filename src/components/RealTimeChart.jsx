@@ -104,7 +104,7 @@ const RealTimeChart = () => {
             <select
                 value={selectedSymbol}
                 onChange={(e) => setSelectedSymbol(e.target.value)}
-                className='border p-2 rounded mr-4'
+                className='border p-2 rounded'
             >
                 {symbols.map((symbol) => (
                     <option key={symbol} value={symbol}>
